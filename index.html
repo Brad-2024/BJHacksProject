@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flight Footprint</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Flight Footprint</h1>
+        </div>
+        <div class="content">
+            <form action="flight_footprint.php" method="post">
+                <div class="form-group">
+                    <label for="from">From</label>
+                    <select name="from" id="from">
+                        <option value="DC">DC</option>
+                        <option value="Virginia">Virginia</option>
+                        <option value="Charlotte">Charlotte</option>
+                        <option value="Austin">Austin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="to">To</label>
+                    <select name="to" id="to">
+                        <option value="DC">DC</option>
+                        <option value="Virginia">Virginia</option>
+                        <option value="Charlotte">Charlotte</option>
+                        <option value="Austin">Austin</option>
+                    </select>
+                </div>
+                <div class="form-button">
+                    <button type="submit">Calculate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
