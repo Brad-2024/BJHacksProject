@@ -39,17 +39,30 @@
             <script>
                 document.getElementById('flight-form').addEventListener('submit', function(event) {
                     event.preventDefault();
-                    document.querySelector('.result').style.display = 'block';
                     fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
                         method: 'POST',
                         body: new FormData(this)
                     })
                         .then(response => response.json())
                         .then(data => {
-                            document.getElementById('flight-footprint').textContent = data.footprint;
-                            document.getElementById('current-to').textContent = data.to;
-                            document.getElementById('current-from').textContent = data.from;
-
+                            if (data.error) {
+                                if (data.error === "empty") {
+                                    document.getElementById('not-both-selected').style.display = 'block';
+                                    setTimeout(() => {
+                                        document.getElementById('not-both-selected').style.display = 'none';
+                                    }, 2000);
+                                } else if (data.error === "same") {
+                                    document.getElementById('both-same').style.display = 'block';
+                                    setTimeout(() => {
+                                        document.getElementById('both-same').style.display = 'none';
+                                    }, 2000);
+                                }
+                            } else {
+                                document.querySelector('.result').style.display = 'block';
+                                document.getElementById('flight-footprint').textContent = data.footprint;
+                                document.getElementById('current-to').textContent = data.to;
+                                document.getElementById('current-from').textContent = data.from;
+                            }
                         })
                         .catch(error => console.error('Error:', error));
                 });
@@ -59,6 +72,10 @@
                 <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
                 <p> Current From: <span id="current-from"></span>
                 <p> Current To: <span id="current-to"></span></p>
+            </div>
+            <div class="error">
+                <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
+                <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
             </div>
         </div>
     </div>

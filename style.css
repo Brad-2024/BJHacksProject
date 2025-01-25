@@ -41,3 +41,13 @@ footer {
     border: 1px solid #ccc;
     background-color: #f4f4f4;
 }
+
+.error #not-both-selected {
+    color: red;
+    display: none;
+}
+
+.error #both-same {
+    color: red;
+    display: none;
+}

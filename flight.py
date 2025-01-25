@@ -17,6 +17,7 @@ headers = {
 
 #create a dictionary with iata codes for US airports
 iata_codes = {
+    "": "empty",
     "Atlanta": "atl",
     "Los Angeles": "lax",
     "Chicago": "ord",
@@ -53,7 +54,11 @@ def calculate_footprint(from_iata, to_iata):
     response = requests.post(url, headers=headers, json=data)
 
     # Check the response
-    if response.status_code == 201:
+    if from_iata == "empty" or to_iata == "empty":
+        return jsonify({"error": "empty"})
+    elif from_iata == to_iata:
+        return jsonify({"error": "same"})
+    elif response.status_code == 201:
         response_data = response.json()
         carbon_kg = response_data.get("data", {}).get("attributes", {}).get("carbon_kg")
         print("Carbon footprint (kg):", carbon_kg)
