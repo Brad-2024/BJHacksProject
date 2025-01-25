@@ -51,16 +51,19 @@ def login():
     try:
         # Query the database for the username
         user = conn.execute('SELECT * FROM Users WHERE username = ?', (username,)).fetchone()
+        if user:
+            # If the user exists, return success
+            return jsonify({'success': True, 'username': username}), 200
+        else:
+            # If the user does not exist, create an account for the user
+            conn.execute(
+                'INSERT INTO Users (username, num_flights, total_carbon) VALUES (?, ?, ?)',
+                (username, 0, 0.0)
+            )
+            conn.commit()
+            return jsonify({'success': True, 'username': username, 'message': 'New account created!'}), 201
     finally:
         conn.close()
-
-    if user:
-        # If the user exists, return success
-        return jsonify({'success': True, 'username': username}), 200
-    else:
-        # If the user does not exist, return an error
-        return jsonify({'success': False, 'message': 'Invalid username'}), 401
-
 
 @app.route('/', methods=['POST'])
 def get_flight():
