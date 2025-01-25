@@ -1,7 +1,7 @@
 /* style.css */
 
 /* General styles */
-body {
+.body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -9,20 +9,22 @@ body {
 }
 
 /* Header styles */
-header {
+.header {
     background-color: #333;
     color: #fff;
-    padding: 10px 0;
+    padding: 10px;
+    margin-top: 10px;
+
     text-align: center;
 }
 
 /* Main content styles */
-main {
+.main {
     padding: 20px;
 }
 
 /* Footer styles */
-footer {
+.footer {
     background-color: #333;
     color: #fff;
     text-align: center;
@@ -30,6 +32,13 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+#flight-form {
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    background-color: #f4f4f4;
 }
 
 /* Result styles */
@@ -49,5 +58,9 @@ footer {
 
 .error #both-same {
     color: red;
+    display: none;
+}
+
+.clear {
     display: none;
 }

@@ -88,11 +88,13 @@
                         .then(data => {
                             if (data.error) {
                                 if (data.error === "empty") {
+                                    document.querySelector('.result').style.display = 'none';
                                     document.getElementById('not-both-selected').style.display = 'block';
                                     setTimeout(() => {
                                         document.getElementById('not-both-selected').style.display = 'none';
                                     }, 2000);
                                 } else if (data.error === "same") {
+                                    document.querySelector('.result').style.display = 'none';
                                     document.getElementById('both-same').style.display = 'block';
                                     setTimeout(() => {
                                         document.getElementById('both-same').style.display = 'none';
@@ -100,6 +102,7 @@
                                 }
                             } else {
                                 document.querySelector('.result').style.display = 'block';
+                                document.querySelector('.clear').style.display = 'block';
                                 document.getElementById('flight-footprint').textContent = data.footprint;
                                 document.getElementById('current-to').textContent = data.to;
                                 document.getElementById('current-from').textContent = data.from;
@@ -113,6 +116,16 @@
                 <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
                 <p> Current From: <span id="current-from"></span>
                 <p> Current To: <span id="current-to"></span></p>
+                <div class="clear">
+                    <button type="submit">Clear</button>
+                </div>
+                <script>
+                    document.querySelector('.clear').addEventListener('click', function() {
+                        document.getElementById('flight-form').reset();
+                        document.querySelector('.result').style.display = 'none';
+                        document.querySelector('.clear').style.display = 'none';
+                    });
+                </script>
             </div>
             <div class="error">
                 <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
