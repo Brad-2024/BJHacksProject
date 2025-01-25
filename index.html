@@ -75,21 +75,21 @@
                 <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
                 <p> Current From: <span id="current-from"></span>
                 <p> Current To: <span id="current-to"></span></p>
+                <div class="clear">
+                    <button type="submit">Clear</button>
+                </div>
+                <script>
+                    document.querySelector('.clear').addEventListener('click', function() {
+                        document.getElementById('flight-form').reset();
+                        document.querySelector('.result').style.display = 'none';
+                        document.querySelector('.clear').style.display = 'none';
+                    });
+                </script>
             </div>
             <div class="error">
                 <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
                 <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
             </div>
-            <div class="clear">
-                <button type="submit">Clear</button>
-            </div>
-            <script>
-                document.querySelector('.clear').addEventListener('click', function() {
-                    document.getElementById('flight-form').reset();
-                    document.querySelector('.result').style.display = 'none';
-                    document.querySelector('.clear').style.display = 'none';
-                });
-            </script>
         </div>
     </div>
 </body>
