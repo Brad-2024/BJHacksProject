@@ -147,6 +147,52 @@ def account_info():
     finally:
         conn.close()
 
+@app.route('/add_to_profile', methods=['POST'])
+def add_to_profile():
+    # Parse JSON data from the request
+    data = request.get_json()
+
+    if not data:
+        return jsonify({'error': 'Invalid or missing JSON payload'}), 400
+
+    username = data.get('username')
+    flightFootprint = data.get('flightFootprint')
+
+    if not username or flightFootprint is None:
+        return jsonify({'error': 'Missing required data'}), 400
+
+    try:
+        # Convert flightFootprint to float
+        flightFootprint = float(flightFootprint)
+    except ValueError:
+        return jsonify({'error': 'Invalid flightFootprint value'}), 400
+
+    # Update the database
+    conn = get_db_connection()
+    try:
+        # Update user's total carbon footprint and flight count
+        result = conn.execute(
+            '''
+            UPDATE Users 
+            SET total_carbon = total_carbon + ?, 
+                num_flights = num_flights + 1 
+            WHERE username = ?
+            ''',
+            (flightFootprint, username)
+        )
+        conn.commit()
+
+        # Check if the update affected any rows
+        if result.rowcount == 0:
+            return jsonify({'error': 'User not found'}), 404
+
+        return jsonify({'success': True, 'message': 'Profile updated successfully!'}), 200
+    except sqlite3.Error as e:
+        return jsonify({'error': 'Database error', 'message': str(e)}), 500
+    finally:
+        conn.close()
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

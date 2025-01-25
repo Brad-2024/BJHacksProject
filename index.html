@@ -154,23 +154,36 @@
         <div class="result">
             <h1>Result</h1>
             <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
-            <div class="add-to-profile">
-                <button type="submit">Add To Profile</button>
+            <div class="add_to_profile">
+                <button id="addToProfile">Add To Profile</button>
             </div>
             <script>
-                document.querySelector('.add_to_profile').addEventListener('click', function() {
-                    const username = localStorage.getItem('username');
-                    const flightFootprint = document.getElementById('flight-footprint').textContent;
+                document.getElementById('addToProfile').addEventListener('click', function () {
+                    const username = localStorage.getItem('username'); // Retrieve username from localStorage
+                    const flightFootprint = parseFloat(document.getElementById('flight-footprint').textContent); // Get flight footprint value
 
-                    const formData = new FormData(this); // Collect form data
-                    formData.append('username', username);
-                    formData.append('flightFootprint', flightFootprint);
+                    if (!username || isNaN(flightFootprint)) {
+                        console.error('Invalid data. Username or flight footprint is missing.');
+                        return;
+                    }
 
+                    // Send the username and flight footprint to the backend
                     fetch('http://127.0.0.1:5000/add_to_profile', {
                         method: 'POST',
-                        body: formData,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, flightFootprint }),
                     })
-
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Profile updated successfully:', data.message);
+                            } else {
+                                console.error('Failed to update profile:', data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
                 });
             </script>
             <div class="clear">
