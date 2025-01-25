@@ -3,8 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Account</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="homeIcon" onclick="window.location.href='index.html'">
+    <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#F3F3F3"><path d="M135-95v-517.67L480-872l346 259v518H566v-311H394v311H135Z"/></svg>
+</div>
+<div id="account-info">
+    <h1>Account Information</h1>
+    <p>Hello <span id="username"></span>!</p>
+    <p>Total Carbon: <span id="carbon-total"></span> kg</p>
+    <p># of Flights: <span id="flight-total"></span></p>
+    <button id="logout">Logout</button>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                // Capitalize first letter of username
+                const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+                document.getElementById('username').textContent = capitalizedUsername;
 
+                fetch('http://127.0.0.1:5000/account-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('carbon-total').textContent = data.carbon_total;
+                    document.getElementById('flight-total').textContent = data.flight_total;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+
+        document.getElementById('logout').addEventListener('click', function() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.href = 'index.html';
+        });
+    </script>
 </body>
 </html>

@@ -16,7 +16,7 @@ headers = {
     "Content-Type": "application/json"
 }
 
-#create a dictionary with iata codes for US airports
+# create a dictionary with iata codes for US airports
 iata_codes = {
     "": "empty",
     "Atlanta": "atl",
@@ -31,10 +31,12 @@ iata_codes = {
     "Las Vegas": "las"
 }
 
+
 def get_db_connection():
     conn = sqlite3.connect('identifier.sqlite')
     conn.row_factory = sqlite3.Row
     return conn
+
 
 # Login route
 @app.route('/login', methods=['POST'])
@@ -59,19 +61,27 @@ def login():
         # If the user does not exist, return an error
         return jsonify({'success': False, 'message': 'Invalid username'}), 401
 
+
 @app.route('/', methods=['POST'])
 def get_flight():
     from_location = request.form.get('from')
     to_location = request.form.get('to')
     username = request.form.get('username')
+
+    # Check for missing or empty inputs
+    if not from_location or not to_location:
+        return jsonify({"error": "empty"}), 400
+
+    # Call get_iata to process inputs
     return get_iata(from_location, to_location, username)
 
-def get_iata(from_location, to_location, username):
 
+def get_iata(from_location, to_location, username):
     # Placeholder function to get IATA codes
     from_iata = iata_codes.get(from_location)
     to_iata = iata_codes.get(to_location)
     return calculate_footprint(from_iata, to_iata, username)
+
 
 def calculate_footprint(from_iata, to_iata, username):
     data = {
@@ -84,6 +94,7 @@ def calculate_footprint(from_iata, to_iata, username):
 
     response = requests.post(url, headers=headers, json=data)
 
+    print(f"from_iata: {from_iata}, to_iata: {to_iata}")
     # Check the response
     if from_iata == "empty" or to_iata == "empty":
         return jsonify({"error": "empty"})
@@ -93,26 +104,45 @@ def calculate_footprint(from_iata, to_iata, username):
         response_data = response.json()
         carbon_kg = response_data.get("data", {}).get("attributes", {}).get("carbon_kg")
         print("Carbon footprint (kg):", carbon_kg)
-        # connect to the database and add the carobon_kg to total_carbon and increment the number of flights
-        conn = get_db_connection()
-        try:
-            conn.execute(
-                '''
-                UPDATE Users
-                SET num_flights = num_flights + 1,
-                    total_carbon = total_carbon + ?
-                WHERE username = ?
-                ''',
-                (carbon_kg, username)
-            )
-            conn.commit()
-        finally:
-            conn.close()
 
         return jsonify({"footprint": carbon_kg, "from": from_iata, "to": to_iata})
     else:
         print(f"Error: {response.status_code}")
         print("Details:", response.text)
+
+
+@app.route('/account-info', methods=['POST'])
+def account_info():
+    # Extract username from the JSON payload
+    data = request.get_json()
+    username = data.get('username')
+
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+
+    # Connect to the database
+    try:
+        conn = get_db_connection()
+        user_data = conn.execute(
+            'SELECT total_carbon, num_flights FROM Users WHERE username = ?',
+            (username,)
+        ).fetchone()
+
+        if user_data is None:
+            return jsonify({'error': 'User not found'}), 404
+
+        total_carbon = user_data['total_carbon']
+        total_carbon = round(total_carbon, 2)
+        num_flights = user_data['num_flights']
+        print(total_carbon, num_flights)
+        return jsonify({
+            'carbon_total': total_carbon,
+            'flight_total': num_flights
+        }), 200
+    except sqlite3.Error as e:
+        return jsonify({'error': 'Database error', 'message': str(e)}), 500
+    finally:
+        conn.close()
 
 
 if __name__ == '__main__':

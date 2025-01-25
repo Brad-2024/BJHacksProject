@@ -1,5 +1,6 @@
 /* style.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Fascinate+Inline&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 :root {
     --primary-color: #e6e6e6;
     --secondary-color: #58a1f1;
@@ -20,7 +21,7 @@
 }
 
 html {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: "Sour Gummy", serif;
     text-align: center;
     font-size: 12px;
     color: var(--text-color);
@@ -35,10 +36,12 @@ body {
 }
 
 .accountIcon {
+    display: none;
     position: fixed;
     top: 10px;
     right: 10px;
     z-index: 1000;
+    border-radius: 25%;
 }
 
 .accountIcon svg {
@@ -46,11 +49,38 @@ body {
     height: 50px;
     fill: var(--primary-color);
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 25%;
 }
 
+.accountIcon svg:hover {
+    background-color: var(--text-color);
+}
 
+.homeIcon {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    border-radius: 25%;
+}
+
+.homeIcon svg {
+    width: 50px;
+    height: 50px;
+    fill: var(--primary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 25%;
+}
+
+.homeIcon svg:hover {
+    background-color: var(--text-color);
+
+}
 
 .loginSection {
+    position: relative;
     box-sizing: border-box;
     background-color: var(--primary-color);
     height: 100vh;
@@ -64,8 +94,9 @@ body {
 }
 
 h1 {
+    font-family: "Fascinate Inline", serif;
     font-size: 3rem;
-    font-weight: 900;
+    font-weight: 400;
     text-transform: uppercase;
 }
 
@@ -142,6 +173,36 @@ form button focus {
     background-color: var(--text-color);
 }
 
+.form-group option {
+    font-family: "Sour Gummy", serif;
+}
+
+.form-group select {
+    font-family: "Sour Gummy", serif;
+}
+
+
+#message {
+    position: absolute; /* Make it float within the .loginSection */
+    background-color: var(--text-color);
+    color: var(--danger-color);
+    padding: 10px 20px;
+    border-radius: 10px; /* Slightly rounded edges for a better look */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for a floating effect */
+    font-size: 1rem;
+    z-index: 10; /* Ensure it appears above other elements */
+    display: none; /* Hide by default */
+    justify-content: center;
+    align-items: center;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to align center */
+    width: auto; /* Allow the message to adjust based on its content */
+    max-width: 90%; /* Ensure the message doesn't overflow the container */
+    text-align: center;
+}
+
+
 #flight-form {
     margin: 10px 0;
 }
@@ -206,8 +267,28 @@ form button focus {
     background-color: var(--text-color);
 }
 
-.error {
+.content {
+    position: relative;
+}
+
+.floating-message {
+    position: absolute;
+    background-color: var(--text-color);
+    color: var(--danger-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    z-index: 10;
     display: none;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    max-width: 90%;
+    text-align: center;
 }
 
 .logout button {
@@ -229,6 +310,49 @@ form button focus {
 }
 
 .logout button focus {
+    outline: none;
+    background-color: var(--text-color);
+}
+
+
+#account-info {
+    box-sizing: border-box;
+    background-color: var(--primary-color);
+    height: 100vh;
+    width: max(40%, 600px);
+    padding: 10px;
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#account-info p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+#account-info button {
+    margin-top: 10px;
+    padding: .85em 4em;
+    font: inherit;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1000px;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 150ms ease;
+}
+
+#account-info button:hover {
+    background-color: var(--text-color);
+}
+
+#account-info button focus {
     outline: none;
     background-color: var(--text-color);
 }

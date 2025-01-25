@@ -5,16 +5,19 @@
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         const loginSection = document.getElementById('loginSection');
         const logoutButton = document.getElementById('logout');
+        const userIcon = document.querySelector('.accountIcon');
         const container = document.querySelector('.container');
 
         if (isLoggedIn) {
             loginSection.style.display = 'none';
             container.style.display = 'flex';
             logoutButton.style.display = 'flex';
+            userIcon.style.display = 'block';
         } else {
             loginSection.style.display = 'flex';
             container.style.display = 'none';
             logoutButton.style.display = 'none';
+            userIcon.style.display = 'none';
         }
     });
 </script>
@@ -41,7 +44,7 @@
         </div>
     </form>
     <div id="message"></div>
-    </div>
+</div>
 
 <script>
     const form = document.getElementById('loginForm');
@@ -59,19 +62,23 @@
             body: JSON.stringify({ username })
         })
 
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Handle successful login
-                message.innerText = `Welcome, ${data.username}!`;
-                localStorage.setItem('isLoggedIn', true);
-                localStorage.setItem('username', data.username);
-                window.location.reload();
-            } else {
-                // Handle login failure
-                message.innerText = data.message || 'Login failed. Please try again.';
-            }
-        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Handle successful login
+                    message.innerText = `Welcome, ${data.username}!`;                    localStorage.setItem('isLoggedIn', true);
+                    localStorage.setItem('username', data.username);
+                    window.location.reload();
+                } else {
+                    // Handle login failure
+                    message.style.display = 'block';
+                    message.innerText = data.message || 'Login failed. Please try again.';
+                    setTimeout(() => {
+                        message.innerText = '';
+                        message.style.display = 'none';
+                    }, 2000);
+                }
+            })
     });
 </script>
 <div class="container">
@@ -83,7 +90,7 @@
             <div class="form-group">
                 <label for="from">From</label>
                 <select name="from" id="from">
-                    <option value="" disabled selected>Select your destination</option>
+                    <option value="" disabled selected>Select your location</option>
                     <option value="Atlanta">Atlanta</option>
                     <option value="Chicago">Chicago</option>
                     <option value="Seattle">Seattle</option>
@@ -105,32 +112,33 @@
             </div>
         </form>
         <script>
-            document.getElementById('flight-form').addEventListener('submit', function(event) {
+            function showMessage(elementId, text, duration = 2000) {
+                const element = document.getElementById(elementId);
+                element.textContent = text;
+                element.style.display = 'flex'; // Show the message
+                setTimeout(() => {
+                    element.style.display = 'none'; // Hide the message after the duration
+                }, duration);
+            }
+
+            document.getElementById('flight-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const username = localStorage.getItem('username');
 
                 const formData = new FormData(this); // Collect form data
                 formData.append('username', username);
 
-                fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
+                fetch('http://127.0.0.1:5000/', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 })
-                    .then(response => response.json())
-                    .then(data => {
+                    .then((response) => response.json())
+                    .then((data) => {
                         if (data.error) {
-                            if (data.error === "empty") {
-                                document.querySelector('.result').style.display = 'none';
-                                document.getElementById('not-both-selected').style.display = 'flex';
-                                setTimeout(() => {
-                                    document.getElementById('not-both-selected').style.display = 'none';
-                                }, 2000);
-                            } else if (data.error === "same") {
-                                document.querySelector('.result').style.display = 'none';
-                                document.getElementById('both-same').style.display = 'flex';
-                                setTimeout(() => {
-                                    document.getElementById('both-same').style.display = 'none';
-                                }, 2000);
+                            if (data.error === 'empty') {
+                                showMessage('not-both-selected', 'Error: Please select both departure and arrival airports.');
+                            } else if (data.error === 'same') {
+                                showMessage('both-same', 'Error: Departure and arrival airports cannot be the same.');
                             }
                         } else {
                             document.querySelector('.result').style.display = 'flex';
@@ -140,12 +148,31 @@
                             document.getElementById('current-from').textContent = data.from;
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch((error) => console.error('Error:', error));
             });
         </script>
         <div class="result">
             <h1>Result</h1>
             <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
+            <div class="add-to-profile">
+                <button type="submit">Add To Profile</button>
+            </div>
+            <script>
+                document.querySelector('.add_to_profile').addEventListener('click', function() {
+                    const username = localStorage.getItem('username');
+                    const flightFootprint = document.getElementById('flight-footprint').textContent;
+
+                    const formData = new FormData(this); // Collect form data
+                    formData.append('username', username);
+                    formData.append('flightFootprint', flightFootprint);
+
+                    fetch('http://127.0.0.1:5000/add_to_profile', {
+                        method: 'POST',
+                        body: formData,
+                    })
+
+                });
+            </script>
             <div class="clear">
                 <button type="submit">Clear</button>
             </div>
@@ -158,8 +185,8 @@
             </script>
         </div>
         <div class="error">
-            <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
-            <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
+            <p id="not-both-selected" class="floating-message">Error: Please select both departure and arrival airports.</p>
+            <p id="both-same" class="floating-message">Error: Departure and arrival airports cannot be the same.</p>
         </div>
     </div>
     <div class="logout" id="logout">
