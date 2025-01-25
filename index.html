@@ -1,137 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const loginSection = document.getElementById('loginSection');
+        const container = document.querySelector('.container');
+
+        if (isLoggedIn) {
+            loginSection.style.display = 'none';
+            container.style.display = 'block';
+        } else {
+            loginSection.style.display = 'block';
+            container.style.display = 'none';
+        }
+    });
+</script>
 <head>
     <meta charset="UTF-8">
     <title>Flight Footprint</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!--Login Page-->
-    <div class="container" id="login-container">
-        <div class="header">
-            <h1>Login</h1>
-        </div>
-        <form id="login-form">
+<div id="loginSection">
+<h1>Login</h1>
+<form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Login</button>
+</form>
+<div id="message"></div>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+        const username = document.getElementById('username').value;
+        // Send the POST request to the backend
+        fetch('http://127.0.0.1:5000/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username })
+        })
+
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Handle successful login
+                message.innerText = `Welcome, ${data.username}!`;
+                localStorage.setItem('isLoggedIn', true);
+                localStorage.setItem('username', data.username);
+                window.location.reload();
+            } else {
+                // Handle login failure
+                message.innerText = data.message || 'Login failed. Please try again.';
+            }
+        })
+    });
+</script>
+<div class="container">
+    <div class="header">
+        <h1>Flight Footprint</h1>
+    </div>
+    <div class="content">
+        <form id="flight-form" method="post">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id= "username" name="username" placeholder="Enter your username" required>
+                <label for="from">From</label>
+                <select name="from" id="from">
+                    <option value="" disabled selected>Select your destination</option>
+                    <option value="Atlanta">Atlanta</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="Seattle">Seattle</option>
+                    <option value="Miami">Miami</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="to">To</label>
+                <select name="to" id="to">
+                    <option value="" disabled selected>Select your destination</option>
+                    <option value="Atlanta">Atlanta</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="Seattle">Seattle</option>
+                    <option value="Miami">Miami</option>
+                </select>
             </div>
             <div class="form-button">
-                <button type="submit">Login</button>
+                <button type="submit">Calculate</button>
             </div>
         </form>
-    </div>
-
-    <div class="container" id="main-container" style="display: none">
-        <div class="header">
-            <h1>Flight Footprint</h1>
-        </div>
-        <div class="content">
-            <form id="flight-form" method="post">
-                <div class="form-group">
-                    <label for="from">From</label>
-                    <select name="from" id="from">
-                        <option value="" disabled selected>Select your destination</option>
-                        <option value="Atlanta">Atlanta</option>
-                        <option value="Chicago">Chicago</option>
-                        <option value="Seattle">Seattle</option>
-                        <option value="Miami">Miami</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="to">To</label>
-                    <select name="to" id="to">
-                        <option value="" disabled selected>Select your destination</option>
-                        <option value="Atlanta">Atlanta</option>
-                        <option value="Chicago">Chicago</option>
-                        <option value="Seattle">Seattle</option>
-                        <option value="Miami">Miami</option>
-                    </select>
-                </div>
-                <div class="form-button">
-                    <button type="submit">Calculate</button>
-                </div>
-            </form>
-            <script>
-                // Login Logic
-                document.getElementById('login-form').addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    const username = document.getElementById('username').value;
-
-                    if (username) {
-                        fetch('http://127.0.0.1:5000/login', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json',
-                        },
-                            body: JSON.stringify({ username: username })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                        if (data.message) {
-                            document.getElementById('login-container').style.display = 'none';
-                            document.getElementById('main-container').style.display = 'block';
+        <script>
+            document.getElementById('flight-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
+                    method: 'POST',
+                    body: new FormData(this)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            if (data.error === "empty") {
+                                document.querySelector('.result').style.display = 'none';
+                                document.getElementById('not-both-selected').style.display = 'block';
+                                setTimeout(() => {
+                                    document.getElementById('not-both-selected').style.display = 'none';
+                                }, 2000);
+                            } else if (data.error === "same") {
+                                document.querySelector('.result').style.display = 'none';
+                                document.getElementById('both-same').style.display = 'block';
+                                setTimeout(() => {
+                                    document.getElementById('both-same').style.display = 'none';
+                                }, 2000);
+                            }
+                        } else {
+                            document.querySelector('.result').style.display = 'block';
+                            document.querySelector('.clear').style.display = 'block';
+                            document.getElementById('flight-footprint').textContent = data.footprint;
+                            document.getElementById('current-to').textContent = data.to;
+                            document.getElementById('current-from').textContent = data.from;
                         }
                     })
                     .catch(error => console.error('Error:', error));
-                    } else {
-                        alert('Please enter a valid username');
-                    }
-                });
-
-                document.getElementById('flight-form').addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
-                        method: 'POST',
-                        body: new FormData(this)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.error) {
-                                if (data.error === "empty") {
-                                    document.querySelector('.result').style.display = 'none';
-                                    document.getElementById('not-both-selected').style.display = 'block';
-                                    setTimeout(() => {
-                                        document.getElementById('not-both-selected').style.display = 'none';
-                                    }, 2000);
-                                } else if (data.error === "same") {
-                                    document.querySelector('.result').style.display = 'none';
-                                    document.getElementById('both-same').style.display = 'block';
-                                    setTimeout(() => {
-                                        document.getElementById('both-same').style.display = 'none';
-                                    }, 2000);
-                                }
-                            } else {
-                                document.querySelector('.result').style.display = 'block';
-                                document.querySelector('.clear').style.display = 'block';
-                                document.getElementById('flight-footprint').textContent = data.footprint;
-                                document.getElementById('current-to').textContent = data.to;
-                                document.getElementById('current-from').textContent = data.from;
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
+            });
+        </script>
+        <div class="result">
+            <h2>Result</h2>
+            <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
+            <p> Current From: <span id="current-from"></span>
+            <p> Current To: <span id="current-to"></span></p>
+            <div class="clear">
+                <button type="submit">Clear</button>
+            </div>
+            <script>
+                document.querySelector('.clear').addEventListener('click', function() {
+                    document.getElementById('flight-form').reset();
+                    document.querySelector('.result').style.display = 'none';
+                    document.querySelector('.clear').style.display = 'none';
                 });
             </script>
-            <div class="result">
-                <h2>Result</h2>
-                <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
-                <p> Current From: <span id="current-from"></span>
-                <p> Current To: <span id="current-to"></span></p>
-                <div class="clear">
-                    <button type="submit">Clear</button>
-                </div>
-                <script>
-                    document.querySelector('.clear').addEventListener('click', function() {
-                        document.getElementById('flight-form').reset();
-                        document.querySelector('.result').style.display = 'none';
-                        document.querySelector('.clear').style.display = 'none';
-                    });
-                </script>
-            </div>
-            <div class="error">
-                <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
-                <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
-            </div>
+        </div>
+        <div class="error">
+            <p id="not-both-selected">Error: Please select both departure and arrival airports.</p>
+            <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
         </div>
     </div>
+</div>
+<div class="logout" id="logout">
+    <button type ="submit">Logout</button>
+</div>
+<script>
+    document.getElementById('logout').addEventListener('click', function() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('username');
+        window.location.reload();
+    });
+</script>
 </body>
 </html>
