@@ -5,6 +5,7 @@
     --secondary-color: #58a1f1;
     --input-color: #afd2f8;
     --text-color: #333;
+    --box-text-color: #989898;
     --success-color: #28a745;
     --danger-color: #dc3545;
     --warning-color: #ffc107;
@@ -132,8 +133,13 @@ form button focus {
 #flight-form select {
     border: none;
     border-radius: 0 10px 10px 0;
+    background-color: var(--input-color);
+    color: var(--text-color);
 }
 
+#flight-form select option#default {
+    color: var(--box-text-color);
+}
 
 .container {
     display: flex;
