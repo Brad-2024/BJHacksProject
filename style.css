@@ -51,3 +51,7 @@ footer {
     color: red;
     display: none;
 }
+
+.clear {
+    display: none;
+}
