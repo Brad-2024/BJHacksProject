@@ -42,11 +42,26 @@ def get_iata(from_location, to_location):
 
 
 def calculate_footprint(from_iata, to_iata):
+    # API calculation of flight emission
+    url = f"{BASE_URL}/flight/emission"
+    data = {
+        "type": "flight",
+        "passengers": 1,
+        "legs": [
+            {"departure_": from_iata, "arrival_": to_iata}
+        ]
+    }
+    response = requests.post(url, headers=headers, json=data)
 
-    # Add API funtionality here
+    # Extract only the carbon_kg value
+    if response.status_code == 200:
+        result = {'footprint': response.json()['data']['attributes']['carbon_kg'],
+                  'to': to_iata, 'from': from_iata}
+        return jsonify(result)
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return None
 
-    result = {'footprint': 5, 'to': to_iata, 'from': from_iata}
-    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
