@@ -1,0 +1,26 @@
+{
+    "data": {
+        "id": "68d6d13f-056b-4d25-8f8d-dc79256238d3",
+        "type": "estimate",
+        "attributes": {
+            "passengers": 2,
+            "legs": [
+                {
+                    "departure_airport": "SFO",
+                    "destination_airport": "YYZ"
+                },
+                {
+                    "departure_airport": "YYZ",
+                    "destination_airport": "SFO"
+                }
+            ],
+            "distance_value": 7454.15,
+            "distance_unit": "km",
+            "estimated_at": "2025-01-25T04:23:18.956Z",
+            "carbon_g": 859824,
+            "carbon_lb": 1895.59,
+            "carbon_kg": 859.82,
+            "carbon_mt": 0.86
+        }
+    }
+}
