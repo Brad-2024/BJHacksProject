@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Flight Footprint</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -11,7 +11,7 @@
             <h1>Flight Footprint</h1>
         </div>
         <div class="content">
-            <form action="flight_footprint.php" method="post">
+            <form id="flight-form" method="post">
                 <div class="form-group">
                     <label for="from">From</label>
                     <select name="from" id="from">
@@ -34,6 +34,25 @@
                     <button type="submit">Calculate</button>
                 </div>
             </form>
+            <script>
+                document.getElementById('flight-form').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    document.querySelector('.result').style.display = 'block';
+                    fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
+                        method: 'POST',
+                        body: new FormData(this)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('flight-footprint').textContent = data.footprint;
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            </script>
+            <div class="result">
+                <h2>Result</h2>
+                <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
+            </div>
         </div>
     </div>
 </body>

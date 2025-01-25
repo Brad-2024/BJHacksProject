@@ -31,3 +31,13 @@ footer {
     bottom: 0;
     width: 100%;
 }
+
+/* Result styles */
+/* make result class hidden by default */
+.result {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    background-color: #f4f4f4;
+}
