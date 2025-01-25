@@ -63,16 +63,17 @@ def login():
 def get_flight():
     from_location = request.form.get('from')
     to_location = request.form.get('to')
-    return get_iata(from_location, to_location)
+    username = request.form.get('username')
+    return get_iata(from_location, to_location, username)
 
-def get_iata(from_location, to_location):
+def get_iata(from_location, to_location, username):
 
     # Placeholder function to get IATA codes
     from_iata = iata_codes.get(from_location)
     to_iata = iata_codes.get(to_location)
-    return calculate_footprint(from_iata, to_iata)
+    return calculate_footprint(from_iata, to_iata, username)
 
-def calculate_footprint(from_iata, to_iata):
+def calculate_footprint(from_iata, to_iata, username):
     data = {
         "type": "flight",
         "passengers": 1,
@@ -92,6 +93,22 @@ def calculate_footprint(from_iata, to_iata):
         response_data = response.json()
         carbon_kg = response_data.get("data", {}).get("attributes", {}).get("carbon_kg")
         print("Carbon footprint (kg):", carbon_kg)
+        # connect to the database and add the carobon_kg to total_carbon and increment the number of flights
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                '''
+                UPDATE Users
+                SET num_flights = num_flights + 1,
+                    total_carbon = total_carbon + ?
+                WHERE username = ?
+                ''',
+                (carbon_kg, username)
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
         return jsonify({"footprint": carbon_kg, "from": from_iata, "to": to_iata})
     else:
         print(f"Error: {response.status_code}")

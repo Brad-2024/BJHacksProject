@@ -4,14 +4,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         const loginSection = document.getElementById('loginSection');
+        const logoutButton = document.getElementById('logout');
         const container = document.querySelector('.container');
 
         if (isLoggedIn) {
             loginSection.style.display = 'none';
-            container.style.display = 'block';
+            container.style.display = 'flex';
+            logoutButton.style.display = 'flex';
         } else {
-            loginSection.style.display = 'block';
+            loginSection.style.display = 'flex';
             container.style.display = 'none';
+            logoutButton.style.display = 'none';
         }
     });
 </script>
@@ -21,15 +24,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginSection">
-<h1>Login</h1>
-<form id="loginForm">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <button type="submit">Login</button>
-</form>
-<div id="message"></div>
-</div>
+<div class="loginSection" id="loginSection">
+    <h1>Login</h1>
+    <form id="loginForm">
+        <div>
+            <label for="username">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+            </label>
+            <input type="text" id="username" name="username" placeholder="Username" required>
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+    <div id="message"></div>
+    </div>
 
 <script>
     const form = document.getElementById('loginForm');
@@ -95,29 +104,34 @@
         <script>
             document.getElementById('flight-form').addEventListener('submit', function(event) {
                 event.preventDefault();
+                const username = localStorage.getItem('username');
+
+                const formData = new FormData(this); // Collect form data
+                formData.append('username', username);
+
                 fetch('http://127.0.0.1:5000/', {  // Ensure the URL matches your Flask server URL
                     method: 'POST',
-                    body: new FormData(this)
+                    body: formData
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.error) {
                             if (data.error === "empty") {
                                 document.querySelector('.result').style.display = 'none';
-                                document.getElementById('not-both-selected').style.display = 'block';
+                                document.getElementById('not-both-selected').style.display = 'flex';
                                 setTimeout(() => {
                                     document.getElementById('not-both-selected').style.display = 'none';
                                 }, 2000);
                             } else if (data.error === "same") {
                                 document.querySelector('.result').style.display = 'none';
-                                document.getElementById('both-same').style.display = 'block';
+                                document.getElementById('both-same').style.display = 'flex';
                                 setTimeout(() => {
                                     document.getElementById('both-same').style.display = 'none';
                                 }, 2000);
                             }
                         } else {
-                            document.querySelector('.result').style.display = 'block';
-                            document.querySelector('.clear').style.display = 'block';
+                            document.querySelector('.result').style.display = 'flex';
+                            document.querySelector('.clear').style.display = 'flex';
                             document.getElementById('flight-footprint').textContent = data.footprint;
                             document.getElementById('current-to').textContent = data.to;
                             document.getElementById('current-from').textContent = data.from;
@@ -127,10 +141,8 @@
             });
         </script>
         <div class="result">
-            <h2>Result</h2>
+            <h1>Result</h1>
             <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
-            <p> Current From: <span id="current-from"></span>
-            <p> Current To: <span id="current-to"></span></p>
             <div class="clear">
                 <button type="submit">Clear</button>
             </div>
@@ -147,16 +159,17 @@
             <p id="both-same">Error: Departure and arrival airports cannot be the same.</p>
         </div>
     </div>
+    <div class="logout" id="logout">
+        <button type ="submit">Logout</button>
+    </div>
+    <script>
+        document.getElementById('logout').addEventListener('click', function() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            window.location.reload();
+        });
+    </script>
 </div>
-<div class="logout" id="logout">
-    <button type ="submit">Logout</button>
-</div>
-<script>
-    document.getElementById('logout').addEventListener('click', function() {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('username');
-        window.location.reload();
-    });
-</script>
+
 </body>
 </html>

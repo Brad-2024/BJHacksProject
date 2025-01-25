@@ -1,76 +1,212 @@
 /* style.css */
 
+:root {
+    --primary-color: #e6e6e6;
+    --secondary-color: #58a1f1;
+    --input-color: #afd2f8;
+    --text-color: #333;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+}
+
+* {
+    margin : 0;
+    padding: 0;
+}
+
+html {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
 /* General styles */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
-    color: #343a40;
+    min-height: 100vh;
+    background-image: url(background.jpg);
+    background-size: cover;
+    overflow: hidden;
 }
 
-/* Header styles */
-.header {
-    background-color: #007bff;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.loginSection {
+    box-sizing: border-box;
+    background-color: var(--primary-color);
+    height: 100vh;
+    width: max(40%, 600px);
+    padding: 10px;
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Main content styles */
-.main {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
-/* Footer styles */
-.footer {
-    background-color: #343a40;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
+form {
+    width: min(400px, 100%);
+    margin-bottom: 50px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+form > div {
     width: 100%;
-    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+}
+
+form label {
+    flex-shrink: 0;
+    height: 50px;
+    width: 50px;
+    background-color: var(--secondary-color);
+    fill: var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form input {
+    box-sizing: border-box;
+    flex-grow: 1;
+    min-width: 0;
+    height: 50px;
+    padding: 1em;
+    font: inherit;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background-color: var(--input-color);
+    transition: 150ms ease;
+}
+
+form input:hover {
+    border: 2px solid var(--secondary-color);
+}
+
+form input:focus {
+    outline: none;
+}
+
+form button {
+    margin-top: 10px;
+    padding: .85em 4em;
+    font: inherit;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1000px;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 150ms ease;
+}
+
+form button:hover {
+    background-color: var(--text-color);
+}
+
+form button focus {
+    outline: none;
+    background-color: var(--text-color);
 }
 
 #flight-form {
-    padding: 20px;
-    margin-top: 20px;
-    border: 1px solid #ced4da;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
 }
 
-#flight-form .form-group {
-    margin-bottom: 15px;
+#flight-form select {
+    border: none;
+    border-radius: 0 10px 10px 0;
 }
 
-/* Result styles */
-/* make result class hidden by default */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+    background-color: var(--primary-color);
+    border-radius: 0 20px 20px 0;
+    width: max(40%, 600px);
+}
+
 .result {
     display: none;
-    padding: 20px;
-    margin-top: 20px;
-    border: 1px solid #ced4da;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 10px; /* Add this line to create space between <p> elements */
+}
+.result p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 5px 0;
 }
 
-.error #not-both-selected,
-.error #both-same {
-    color: #dc3545;
-    display: none;
+.result button {
     margin-top: 10px;
+    padding: .85em 4em;
+    font: inherit;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1000px;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 150ms ease;
 }
 
-.clear {
+.result button:hover {
+    background-color: var(--text-color);
+}
+
+.result button focus {
+    outline: none;
+    background-color: var(--text-color);
+}
+
+.error {
     display: none;
-    margin-top: 10px;
 }
 
+.logout button {
+    margin-top: 10px;
+    padding: .85em 4em;
+    font: inherit;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1000px;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 150ms ease;
+}
+
+.logout button:hover {
+    background-color: var(--text-color);
+}
+
+.logout button focus {
+    outline: none;
+    background-color: var(--text-color);
+}
