@@ -45,6 +45,9 @@
                         .then(response => response.json())
                         .then(data => {
                             document.getElementById('flight-footprint').textContent = data.footprint;
+                            document.getElementById('current-to').textContent = data.to;
+                            document.getElementById('current-from').textContent = data.from;
+
                         })
                         .catch(error => console.error('Error:', error));
                 });
@@ -52,6 +55,8 @@
             <div class="result">
                 <h2>Result</h2>
                 <p>Flight Footprint: <span id="flight-footprint">0</span> kg CO2</p>
+                <p> Current To: <span id="current-to"></span></p>
+                <p> Current From: <span id="current-from"></span>
             </div>
         </div>
     </div>

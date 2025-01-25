@@ -6,7 +6,9 @@ CORS(app)  # Enable CORS for all routes and origins
 
 @app.route('/', methods=['POST'])
 def calculate_footprint():
-    result = {'footprint': 5}
+    from_location = request.form.get('from')
+    to_location = request.form.get('to')
+    result = {'footprint': 5, 'to': to_location, 'from': from_location}
     return jsonify(result)
 
 if __name__ == '__main__':
