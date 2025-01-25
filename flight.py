@@ -17,16 +17,16 @@ headers = {
 
 #create a dictionary with iata codes for US airports
 iata_codes = {
-    "Atlanta": "ATL",
-    "Los Angeles": "LAX",
-    "Chicago": "ORD",
-    "Dallas/Fort Worth": "DFW",
-    "Denver": "DEN",
-    "New York City": "JFK",
-    "San Francisco": "SFO",
-    "Seattle": "SEA",
-    "Miami": "MIA",
-    "Las Vegas": "LAS"
+    "Atlanta": "atl",
+    "Los Angeles": "lax",
+    "Chicago": "ord",
+    "Dallas/Fort Worth": "dfw",
+    "Denver": "den",
+    "New York City": "jfk",
+    "San Francisco": "sfo",
+    "Seattle": "sea",
+    "Miami": "mia",
+    "Las Vegas": "las"
 }
 @app.route('/', methods=['POST'])
 def get_flight():
@@ -44,10 +44,9 @@ def get_iata(from_location, to_location):
 def calculate_footprint(from_iata, to_iata):
     data = {
         "type": "flight",
-        "passengers": 2,
+        "passengers": 1,
         "legs": [
-            {"departure_airport": "sfo", "destination_airport": "yyz"},
-            {"departure_airport": "yyz", "destination_airport": "sfo"}
+            {"departure_airport": f"{from_iata}", "destination_airport": f"{to_iata}"},
         ]
     }
 
