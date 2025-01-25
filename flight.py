@@ -12,11 +12,40 @@ headers = {
     "Content-Type": "application/json"
 }
 
+#create a dictionary with iata codes for US airports
+iata_codes = {
+    "Atlanta": "ATL",
+    "Los Angeles": "LAX",
+    "Chicago": "ORD",
+    "Dallas/Fort Worth": "DFW",
+    "Denver": "DEN",
+    "New York City": "JFK",
+    "San Francisco": "SFO",
+    "Seattle": "SEA",
+    "Miami": "MIA",
+    "Las Vegas": "LAS"
+}
+
+
+
 @app.route('/', methods=['POST'])
-def calculate_footprint():
+def get_flight():
     from_location = request.form.get('from')
     to_location = request.form.get('to')
-    result = {'footprint': 5, 'to': to_location, 'from': from_location}
+    return get_iata(from_location, to_location)
+
+def get_iata(from_location, to_location):
+    # Placeholder function to get IATA codes
+    from_iata = iata_codes.get(from_location)
+    to_iata = iata_codes.get(to_location)
+    return calculate_footprint(from_iata, to_iata)
+
+
+def calculate_footprint(from_iata, to_iata):
+
+    # Add API funtionality here
+
+    result = {'footprint': 5, 'to': to_iata, 'from': from_iata}
     return jsonify(result)
 
 if __name__ == '__main__':
