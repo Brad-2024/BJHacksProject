@@ -26,6 +26,14 @@
 </div>
 <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+            // Redirect to login page if not logged in
+            if (!isLoggedIn) {
+                window.location.href = 'index.html';  // Replace with the actual login page URL
+                return;
+            }
+
             const username = localStorage.getItem('username');
             if (username) {
                 // Capitalize first letter of username
