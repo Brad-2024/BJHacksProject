@@ -374,11 +374,13 @@ form button focus {
     justify-content: center;
     align-items: center;
 }
-
+#statistics h1 {
+    margin-bottom: 25px;
+}
 #statistics p {
     font-size: 1.5rem;
     font-weight: 600;
-    margin: 5px 0;
+    margin-bottom: 50px;
 }
 
 #statistics button {
@@ -426,6 +428,14 @@ form button focus {
 
 #flight-dropdown:focus {
     outline: none;
+}
+
+#flight-dropdown option {
+    font-family: "Sour Gummy", serif;
+}
+
+#flight-dropdown {
+    font-family: "Sour Gummy", serif;
 }
 
 #flight-details {
