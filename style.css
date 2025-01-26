@@ -35,12 +35,18 @@ body {
     overflow: hidden;
 }
 
-.accountIcon {
-    display: none;
+.navButtons {
+    display: flex;
+    flex-direction: column; /* Stack the items in a column */
     position: fixed;
     top: 10px;
     right: 10px;
     z-index: 1000;
+    gap: 10px; /* Add spacing between the buttons */
+}
+
+.accountIcon {
+    display: block; /* Ensure the icons are displayed */
     border-radius: 25%;
 }
 
@@ -50,18 +56,17 @@ body {
     fill: var(--primary-color);
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border-radius: 25%;
+    border-radius: 50%; /* Make icons circular */
+    padding: 5px; /* Add padding for better clickability */
 }
 
 .accountIcon svg:hover {
     background-color: var(--text-color);
 }
 
+
 .homeIcon {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
+    display: block; /* Ensure the icons are displayed */
     border-radius: 25%;
 }
 
@@ -71,12 +76,12 @@ body {
     fill: var(--primary-color);
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border-radius: 25%;
+    border-radius: 50%; /* Make icons circular */
+    padding: 5px; /* Add padding for better clickability */
 }
 
 .homeIcon svg:hover {
     background-color: var(--text-color);
-
 }
 
 .loginSection {
