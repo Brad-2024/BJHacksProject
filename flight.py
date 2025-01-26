@@ -284,9 +284,13 @@ def delete_flight():
         # Remove the flight from the list
         flight_history = [flight for flight in flight_history if flight['id'] != flight_id]
 
-        # Save the updated flight history back to the file
-        with open(json_file_path, 'w') as file:
-            json.dump(flight_history, file, indent=4)
+        # If the list becomes empty, delete the JSON file
+        if not flight_history:
+            os.remove(json_file_path)
+        else:
+            # Save the updated flight history back to the file
+            with open(json_file_path, 'w') as file:
+                json.dump(flight_history, file, indent=4)
 
         # Update the database
         carbon_to_deduct = flight_to_delete['carbon_footprint']
@@ -320,6 +324,7 @@ def delete_flight():
 
     except Exception as e:
         return jsonify({'error': 'Failed to delete flight', 'message': str(e)}), 500
+
 
 
 if __name__ == '__main__':

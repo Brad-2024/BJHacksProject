@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Chicago to Miami",
+        "id": 505228,
+        "from": "Chicago",
+        "to": "Miami",
+        "carbon_footprint": 122.05
+    },
+    {
+        "name": "Seattle to Atlanta",
+        "id": 813999,
+        "from": "Seattle",
+        "to": "Atlanta",
+        "carbon_footprint": 224.17
+    },
+    {
+        "name": "Chicago to Seattle",
+        "id": 373282,
+        "from": "Chicago",
+        "to": "Seattle",
+        "carbon_footprint": 167.99
+    }
+]
