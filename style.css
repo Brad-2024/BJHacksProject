@@ -403,3 +403,76 @@ form button focus {
     outline: none;
     background-color: var(--text-color);
 }
+
+.hiddenPort {
+    display: none;
+}
+
+#flight-history-form {
+    margin: 10px 0;
+    flex-direction: column;
+}
+
+#flight-history-form select {
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background-color: var(--input-color);
+    color: var(--text-color);
+}
+
+#flight-history-form select option#default {
+    color: var(--box-text-color);
+}
+
+#flight-dropdown:focus {
+    outline: none;
+}
+
+#flight-details {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--light-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+#flight-details h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+#flight-details p {
+    margin: 5px 0;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+#delete {
+    margin-top: 10px;
+    padding: .85em 4em;
+    font: inherit;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 1000px;
+    background-color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: 150ms ease;
+}
+
+#delete:hover {
+    background-color: var(--text-color);
+}
+
+#delete focus {
+    outline: none;
+    background-color: var(--text-color);
+}

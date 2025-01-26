@@ -166,6 +166,8 @@
         <div class="result">
             <h1>Result</h1>
             <p>Carbon Footprint: <span id="flight-footprint">0</span> kg CO2</p>
+            <p class="hiddenPort">From: <span  id="current-from"></span></p>
+            <p class="hiddenPort">To: <span id="current-to"></span></p>
             <div class="add_to_profile">
                 <button id="addToProfile">Add To Profile</button>
             </div>
@@ -173,23 +175,31 @@
                 document.getElementById('addToProfile').addEventListener('click', function () {
                     const username = localStorage.getItem('username'); // Retrieve username from localStorage
                     const flightFootprint = parseFloat(document.getElementById('flight-footprint').textContent); // Get flight footprint value
+                    const fromAirport = document.getElementById('current-from').textContent; // Get "from" airport
+                    const toAirport = document.getElementById('current-to').textContent; // Get "to" airport
 
-                    if (!username || isNaN(flightFootprint)) {
-                        console.error('Invalid data. Username or flight footprint is missing.');
+                    if (!username || isNaN(flightFootprint) || !fromAirport || !toAirport) {
+                        console.error('Invalid data. Missing username, flight footprint, or airport details.');
                         return;
                     }
 
-                    // Send the username and flight footprint to the backend
+                    // Send the username, footprint, and airports to the backend
                     fetch('http://127.0.0.1:5000/add_to_profile', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ username, flightFootprint }),
+                        body: JSON.stringify({
+                            username,
+                            flightFootprint,
+                            from: fromAirport,
+                            to: toAirport
+                        }),
                     })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
+                                alert('Profile updated successfully!');
                                 console.log('Profile updated successfully:', data.message);
                             } else {
                                 console.error('Failed to update profile:', data.message);

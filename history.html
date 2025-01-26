@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight History</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="navButtons">
+    <div class="accountIcon" id="homeIcon" onclick="window.location.href='index.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#F3F3F3"><path d="M135-95v-517.67L480-872l346 259v518H566v-311H394v311H135Z"/></svg>
+    </div>
+    <div class="accountIcon" id="accountIcon" onclick="window.location.href='account.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+    </div>
+    <div class="accountIcon" id="statsIcon" onclick="window.location.href='stats.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#F3F3F3"><path d="M161-168q-14-14-14-32.5t14-32.5l52-54q-32-42-50-92.5T145-487q0-140 97.5-237.5T480-822h335v335q0 140-97.5 237.5T480-152q-57 0-108-18t-93-50l-53 52q-14 14-32.5 14T161-168Zm173-173q15 14 33.5 14t32.5-14l146-146q14-14 14-33t-14-33q-13-13-32.5-13T481-553L331-404q-13 13-12 31.5t15 31.5Z"/></svg>
+    </div>
+</div>
+
+<div class="container" id="flight-history">
+    <h1>Flight History</h1>
+        <form id="flight-history-form">
+            <div>
+                <label for="flight-dropdown">Select a Flight:</label>
+                <select id="flight-dropdown">
+                    <option value="" disabled selected>Choose a flight</option>
+                </select>
+            </div>
+        </form>
+        <div id="flight-details" style="margin-top: 20px; display: none;">
+            <h2>Flight Details</h2>
+            <p><strong>From:</strong> <span id="flight-from"></span></p>
+            <p><strong>To:</strong> <span id="flight-to"></span></p>
+            <p><strong>Carbon Footprint:</strong> <span id="flight-carbon"></span> kg CO2</p>
+        </div>
+        <div>
+            <button id="delete">Delete</button>
+        </div>
+        <script>
+            document.getElementById('delete').addEventListener('click', async function () {
+                const username = localStorage.getItem('username');
+                const flightId = document.getElementById('flight-dropdown').value;
+
+                if (!username || !flightId) {
+                    alert('Please select a flight to delete.');
+                    return;
+                }
+
+                try {
+                    // Send DELETE request to the backend
+                    const response = await fetch('http://127.0.0.1:5000/delete_flight', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            id: parseInt(flightId), // Ensure flight ID is an integer
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Flight deleted successfully!');
+                        location.reload(); // Reload the page to reflect changes
+                    } else {
+                        alert(`Error: ${result.message || 'Failed to delete flight.'}`);
+                    }
+                } catch (error) {
+                    console.error('Error deleting flight:', error);
+                    alert('An error occurred while deleting the flight. Please try again.');
+                }
+            });
+        </script>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const username = localStorage.getItem('username');
+        if (!username) {
+            window.location.href = 'index.html'; // Redirect to login page if not logged in
+            return;
+        }
+
+        const dropdown = document.getElementById('flight-dropdown');
+        const flightDetails = document.getElementById('flight-details');
+        const flightName = document.getElementById('flight-name');
+        const flightId = document.getElementById('flight-id');
+        const flightFrom = document.getElementById('flight-from');
+        const flightTo = document.getElementById('flight-to');
+        const flightCarbon = document.getElementById('flight-carbon');
+
+        try {
+            // Fetch the flight history JSON file from the server
+            const response = await fetch(`http://127.0.0.1:5000/get_flight_history`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch flight history.');
+            }
+
+            const flightHistory = await response.json();
+
+            // Populate the dropdown with flight names
+            flightHistory.forEach(flight => {
+                const option = document.createElement('option');
+                option.value = flight.id;
+                option.textContent = flight.name;
+                dropdown.appendChild(option);
+            });
+
+            // Add event listener for dropdown change
+            dropdown.addEventListener('change', function () {
+                const selectedFlight = flightHistory.find(flight => flight.id == this.value);
+
+                if (selectedFlight) {
+                    flightFrom.textContent = selectedFlight.from;
+                    flightTo.textContent = selectedFlight.to;
+                    flightCarbon.textContent = selectedFlight.carbon_footprint;
+
+                    flightDetails.style.display = 'block';
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching flight history:', error);
+            document.getElementById('flight-history').innerHTML = '<p>Error loading flight history. Please try again later.</p>';
+        }
+    });
+</script>
+</body>
+</html>

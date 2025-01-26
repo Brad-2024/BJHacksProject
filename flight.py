@@ -1,6 +1,7 @@
 import json
+import random
 import sqlite3
-
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -157,8 +158,10 @@ def add_to_profile():
 
     username = data.get('username')
     flightFootprint = data.get('flightFootprint')
+    from_airport = data.get('from')
+    to_airport = data.get('to')
 
-    if not username or flightFootprint is None:
+    if not username or flightFootprint is None or not from_airport or not to_airport:
         return jsonify({'error': 'Missing required data'}), 400
 
     try:
@@ -182,16 +185,141 @@ def add_to_profile():
         )
         conn.commit()
 
+
+
         # Check if the update affected any rows
         if result.rowcount == 0:
             return jsonify({'error': 'User not found'}), 404
 
-        return jsonify({'success': True, 'message': 'Profile updated successfully!'}), 200
+        # Handle the JSON file for flight history
+        json_file_path = f"user_history/{username}_flight_history.json"
+
+        # generate a random number for the flight id and make sure it is unique
+        flight_id = random.randint(100000, 999999)
+        while os.path.exists(json_file_path):
+            with open(json_file_path, 'r') as file:
+                flight_history = json.load(file)
+                existing_ids = {flight['id'] for flight in flight_history}
+                if flight_id not in existing_ids:
+                    break
+                flight_id = random.randint(100000, 999999)
+        # Backwards convert from iata codes to city names
+        from_airport = list(iata_codes.keys())[list(iata_codes.values()).index(from_airport)]
+        to_airport = list(iata_codes.keys())[list(iata_codes.values()).index(to_airport)]
+        # Create or update the JSON file
+        flight_data = {
+            "name": from_airport + " to " + to_airport,
+            "id": flight_id,
+            "from": from_airport,
+            "to": to_airport,
+            "carbon_footprint": flightFootprint
+        }
+
+        if os.path.exists(json_file_path):
+            with open(json_file_path, 'r') as file:
+                flight_history = json.load(file)
+        else:
+            flight_history = []
+
+        flight_history.append(flight_data)
+
+        with open(json_file_path, 'w') as file:
+            json.dump(flight_history, file, indent=4)
+
+        return jsonify({'success': True, 'message': 'Profile updated and flight history saved!'}), 200
+
     except sqlite3.Error as e:
         return jsonify({'error': 'Database error', 'message': str(e)}), 500
     finally:
         conn.close()
 
+@app.route('/get_flight_history', methods=['POST'])
+def get_flight_history():
+    data = request.get_json()
+    username = data.get('username')
+
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+
+    # Construct the path to the user's flight history JSON file
+    json_file_path = f"user_history/{username}_flight_history.json"
+
+    try:
+        if os.path.exists(json_file_path):
+            with open(json_file_path, 'r') as file:
+                flight_history = json.load(file)
+            return jsonify(flight_history), 200
+        else:
+            return jsonify({'error': 'Flight history not found'}), 404
+    except Exception as e:
+        return jsonify({'error': 'Failed to read flight history', 'message': str(e)}), 500
+
+
+@app.route('/delete_flight', methods=['POST'])
+def delete_flight():
+    data = request.get_json()
+    username = data.get('username')
+    flight_id = data.get('id')
+
+    if not username or not flight_id:
+        return jsonify({'error': 'Missing required data'}), 400
+
+    # Path to the user's flight history JSON file
+    json_file_path = f"user_history/{username}_flight_history.json"
+
+    try:
+        if not os.path.exists(json_file_path):
+            return jsonify({'error': 'Flight history not found'}), 404
+
+        # Load the flight history
+        with open(json_file_path, 'r') as file:
+            flight_history = json.load(file)
+
+        # Find and remove the flight by ID
+        flight_to_delete = next((flight for flight in flight_history if flight['id'] == flight_id), None)
+
+        if not flight_to_delete:
+            return jsonify({'error': 'Flight not found'}), 404
+
+        # Remove the flight from the list
+        flight_history = [flight for flight in flight_history if flight['id'] != flight_id]
+
+        # Save the updated flight history back to the file
+        with open(json_file_path, 'w') as file:
+            json.dump(flight_history, file, indent=4)
+
+        # Update the database
+        carbon_to_deduct = flight_to_delete['carbon_footprint']
+
+        conn = get_db_connection()
+        try:
+            # Retrieve the current values from the database
+            user_data = conn.execute(
+                'SELECT total_carbon, num_flights FROM Users WHERE username = ?',
+                (username,)
+            ).fetchone()
+
+            if not user_data:
+                return jsonify({'error': 'User not found'}), 404
+
+            # Calculate the new values
+            total_carbon = max(0, user_data['total_carbon'] - carbon_to_deduct)  # Ensure carbon does not go negative
+            num_flights = max(0, user_data['num_flights'] - 1)  # Ensure flights do not go negative
+
+            # Update the database
+            conn.execute(
+                'UPDATE Users SET total_carbon = ?, num_flights = ? WHERE username = ?',
+                (total_carbon, num_flights, username)
+            )
+            conn.commit()
+
+        finally:
+            conn.close()
+
+        return jsonify({'success': True, 'message': 'Flight deleted successfully!'}), 200
+
+    except Exception as e:
+        return jsonify({'error': 'Failed to delete flight', 'message': str(e)}), 500
 
 
 if __name__ == '__main__':
